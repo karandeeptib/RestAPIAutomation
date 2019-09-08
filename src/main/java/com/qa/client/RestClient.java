@@ -2,6 +2,7 @@ package com.qa.client;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
@@ -13,37 +14,32 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 public class RestClient {
+
+	// String url="https://reqres.in/api/users";
+
+	// 1 GET Method
+	//Without HEADERS
+	public CloseableHttpResponse get(String url) throws ClientProtocolException, IOException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(url); // http GET request
+		CloseableHttpResponse httpResponse = httpClient.execute(httpGet); // hit the GET url and fetch the response
+
+		return httpResponse;
+
+	}
 	
-	//String url="https://reqres.in/api/users";
-	
-	//1 GET Method
-	
-	public void get(String url) throws ClientProtocolException, IOException {
+	//With HEADERS
+	public CloseableHttpResponse get(String url,HashMap<String,String> headerMap) throws ClientProtocolException, IOException {
 		CloseableHttpClient httpClient= HttpClients.createDefault();
 		HttpGet httpGet=new HttpGet(url);  //http GET request
-		CloseableHttpResponse httpResponse= httpClient.execute(httpGet); //hit the GET url and fetch the response
 		
-	//2 Status code
-		
-		int statusCode= httpResponse.getStatusLine().getStatusCode();
-		System.out.println("Status code is ----> "+statusCode);
-		
-	//3 Header String
-		
-		Header[] headerArray=httpResponse.getAllHeaders();
-		HashMap<String, String> allHeader=new HashMap<String, String>();
-		for (Header header: headerArray) {
-			allHeader.put(header.getName(), header.getValue());			
+		for(Map.Entry<String, String> entry:headerMap.entrySet()) {
+			httpGet.addHeader(entry.getKey(), entry.getValue());
 		}
-		System.out.println("Header String is ---> " +allHeader);
 		
-	//4 JSON response
-		
-		String responseString=EntityUtils.toString(httpResponse.getEntity(),"UTF-8");
-		
-		JSONObject responseJson=new JSONObject(responseString);
-		System.out.println("JSON Response from the API is ---> "+responseJson);
-		
+		CloseableHttpResponse httpResponse= httpClient.execute(httpGet); //hit the GET url and fetch the response
+	
+		return httpResponse;
 		
 	}
 
